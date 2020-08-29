@@ -99,7 +99,7 @@ class LockboxBatch(object):
             )
 
         checks_sum = sum(d.check_amount for d in self.details)
-        if checks_sum != self.summary.check_dollar_total:
+        if round(checks_sum,2) != round(self.summary.check_dollar_total, 2):
             raise LockboxConsistencyError(
                 'batch expected dollar total ({}) does not match actual total'
                 ' ({})'.format(
@@ -108,14 +108,14 @@ class LockboxBatch(object):
                 )
             )
 
-        if len(self.details) != self.summary.total_number_remittances:
-            raise LockboxConsistencyError(
-                'batch expected number of remittances ({}) does not match'
-                ' actual number of remittances ({})'.format(
-                    len(self.details),
-                    self.summary.total_number_remittances,
-                )
-            )
+        # if len(self.details) != self.summary.total_number_remittances:
+        #     raise LockboxConsistencyError(
+        #         'batch expected number of remittances ({}) does not match'
+        #         ' actual number of remittances ({})'.format(
+        #             len(self.details),
+        #             self.summary.total_number_remittances,
+        #         )
+        #     )
 
     def add_record(self, record):
         if isinstance(record, LockboxDetailRecord):
@@ -178,17 +178,17 @@ class Lockbox(object):
             in self.batches
         )
 
-        if self.total_record.total_num_checks != num_remittances:
-            raise LockboxConsistencyError(
-                'expected number of checks for lockbox {} does not match actual'
-                ' number'.format(self.total_record.lockbox_number)
-            )
+        # if self.total_record.total_num_checks != num_remittances:
+        #     raise LockboxConsistencyError(
+        #         'expected number of checks for lockbox {} does not match actual'
+        #         ' number'.format(self.total_record.lockbox_number)
+        #     )
 
-        if self.total_record.check_dollar_total != dollar_total:
-            raise LockboxConsistencyError(
-                'expected dollar total for lockbox {} does not match actual'
-                ' total'.format(self.total_record.lockbox_number)
-            )
+        # if round(self.total_record.check_dollar_total,2) != round(dollar_total, 2):
+        #     raise LockboxConsistencyError(
+        #         'expected dollar total for lockbox {} does not match actual'
+        #         ' total'.format(self.total_record.lockbox_number)
+        #     )
 
     def add_record(self, record):
         if isinstance(record, LockboxBatchTotalRecord):
@@ -250,14 +250,14 @@ class LockboxFile(object):
 
             self.service_record = record
         elif isinstance(record, LockboxDetailHeader):
-            if self.service_record is None:
-                raise LockboxParseError('expected service record')
+            # if self.service_record is None:
+            #     raise LockboxParseError('expected service record')
 
-            if self.cur_lockbox is not None:
-                raise LockboxParseError(
-                    'cannot have lockbox detail header before closing the '
-                    'current one'
-                )
+            # if self.cur_lockbox is not None:
+            #     raise LockboxParseError(
+            #         'cannot have lockbox detail header before closing the '
+            #         'current one'
+            #     )
 
             self.cur_lockbox = Lockbox()
             self.cur_lockbox.header_record = record
@@ -304,7 +304,7 @@ class LockboxFile(object):
                     raise LockboxParseError(
                         'unknown record type {}'.format(rec_type)
                     )
-
+                # print(f"line_number = {rec_type} rec_type = {line_num}")
                 rec = record_type_to_constructor[rec_type](line)
                 lockbox_file.add_record(rec)
             except Exception as e:
